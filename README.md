@@ -668,17 +668,3 @@ Active Development
 The current focus is improving scraping performance, reliability, concurrency, and production-level database processing.
 
 
-
-### One change I'd make before committing
-
-
-Your README currently says approximately **3,000 products**, which is accurate based on your latest runs. I would **not claim that the batch pipeline is production-ready yet** because we just discovered the transaction rollback problem.
-
-
-That's actually a good thing to document honestly:
-
-
-> **Scraping + normalization are working; database batch failure recovery is still being refined.**
-
-
-That makes the project look more credible to someone reviewing your GitHub rather than pretending everything is finished.
