@@ -1,17 +1,25 @@
-# Environment variables / secrets
-.env
+# Python-generated files
+__pycache__/
+*.py[oc]
+*.pyc
+
+# Build artifacts
+build/
+dist/
+wheels/
+*.egg-info/
 
 # Virtual environments
 .venv/
+venv/
 
-# Python generated files
-__pycache__/
-*.pyc
-*.pyo
-*.pyd
+# Environment variables / secrets
+.env
+.env.*
 
-# Build / distribution
-build/
-dist/
-*.egg-info/
-wheels/
+# Meesho raw API responses
+meesho_raw_responses/
+
+# Scraper output
+output/
+data/
