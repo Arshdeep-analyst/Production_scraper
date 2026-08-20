@@ -1,7 +1,7 @@
 import random
 import time
 
-from playwright.sync_api import Page
+from patchright.sync_api import Page
 
 
 class MeeshoClient:
@@ -50,6 +50,8 @@ class MeeshoClient:
 
         # Print response keys only once
         self._printed_response_keys = False
+
+        #self.api_context = api_context
 
     # =========================================================
     # PUBLIC SEARCH

@@ -12,6 +12,7 @@ dependencies = [
     "fastapi>=0.141.1",
     "httpx>=0.28.1",
     "lxml>=6.1.1",
+    "patchright>=1.62.1",
     "playwright>=1.62.0",
     "pydantic-settings>=2.15.0",
     "pymysql>=1.2.0",

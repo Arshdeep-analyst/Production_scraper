@@ -3,7 +3,7 @@ import random
 import time
 from urllib.parse import quote
 
-from playwright.sync_api import APIRequestContext
+from patchright.sync_api import APIRequestContext
 
 
 class MyntraClient:

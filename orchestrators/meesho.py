@@ -1,19 +1,22 @@
+from urllib.parse import quote
+
 from patchright.sync_api import sync_playwright
 
 from db.connection import SessionLocal
 from pipeline.product_pipeline import ProductPipeline
-from scraper.clients.myntra import MyntraClient
-from scraper.normalizer.myntra import MyntraNormalizer
+from scraper.clients.meesho import MeeshoClient
+from scraper.normalizer.meesho import MeeshoNormalizer
 
 
-def run_myntra(
+def run_meesho(
     query: str,
-    pincode: str,
+    max_scrolls: int = 150,
 ) -> None:
 
-    print("\n🚀 Starting Myntra pipeline")
+    print("\n🚀 Starting Meesho pipeline")
     print(f"Query: {query}")
-    print(f"Pincode: {pincode}")
+
+    search_url = f"https://www.meesho.com/search?q={quote(query)}"
 
     with sync_playwright() as playwright:
 
@@ -41,46 +44,34 @@ def run_myntra(
         try:
 
             # -----------------------------------------
-            # 3. Establish Myntra browser session
+            # 3. Create page
             # -----------------------------------------
+            # Note: unlike Myntra, we do NOT call page.goto() here.
+            # MeeshoClient.search() handles navigation itself, because
+            # it needs the response listener attached BEFORE the page
+            # loads, or it can miss the very first API calls.
 
             page = browser_context.new_page()
 
-            print("🌐 Opening Myntra...")
-
-            page.goto(
-                "https://www.myntra.com/",
-                timeout=30000,
-                wait_until="domcontentloaded",
-            )
-
-            print("✅ Myntra browser session established")
-
             # -----------------------------------------
-            # 4. Get API context belonging to browser
+            # 4. Create Meesho client
             # -----------------------------------------
 
-            api_context = browser_context.request
-
-            # -----------------------------------------
-            # 5. Create Myntra client
-            # -----------------------------------------
-
-            client = MyntraClient(
-                api_context
+            client = MeeshoClient(
+                page=page
             )
 
             # -----------------------------------------
-            # 6. Fetch raw products
+            # 5. Fetch raw catalogs (scroll-driven)
             # -----------------------------------------
 
             raw_products = client.search(
-                query=query,
-                pincode=pincode,
+                url=search_url,
+                max_scrolls=max_scrolls,
             )
 
             print(
-                f"\n📦 Raw products collected: "
+                f"\n📦 Raw catalogs collected: "
                 f"{len(raw_products)}"
             )
 
@@ -89,13 +80,13 @@ def run_myntra(
                 return
 
             # -----------------------------------------
-            # 7. Normalizer
+            # 6. Normalizer
             # -----------------------------------------
 
-            normalizer = MyntraNormalizer()
+            normalizer = MeeshoNormalizer()
 
             # -----------------------------------------
-            # 8. Database session
+            # 7. Database session
             # -----------------------------------------
 
             session = SessionLocal()
@@ -109,7 +100,7 @@ def run_myntra(
                 saved_count = 0
 
                 # -----------------------------------------
-                # 9. Normalize → Pipeline → DB
+                # 8. Normalize → Pipeline → DB
                 # -----------------------------------------
 
                 for raw_product in raw_products:
@@ -137,9 +128,9 @@ def run_myntra(
                         )
 
                 print("\n" + "=" * 50)
-                print("✅ Myntra pipeline completed")
+                print("✅ Meesho pipeline completed")
                 print(
-                    f"📦 Raw products: "
+                    f"📦 Raw catalogs: "
                     f"{len(raw_products)}"
                 )
                 print(
@@ -160,7 +151,6 @@ def run_myntra(
 
 if __name__ == "__main__":
 
-    run_myntra(
+    run_meesho(
         query="korean pants",
-        pincode="144002",
     )

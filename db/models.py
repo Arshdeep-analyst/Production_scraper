@@ -42,6 +42,7 @@ class Product(Base):
     stock: Mapped[int|None] = mapped_column(
         Integer,
         nullable=True,
+        default=None
     )
 
     product_url: Mapped[str] = mapped_column(
