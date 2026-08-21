@@ -60,7 +60,7 @@ celery_app.conf.update(
     },
 )
 
-celery_app.autodiscover_tasks(["pipeline"])
+celery_app.conf.imports = ("pipeline.task",)
 
 
 """

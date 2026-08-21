@@ -97,3 +97,51 @@ class Product(Base):
         nullable=False,
     )
     
+
+
+
+
+"""
+ADD THIS CLASS to your existing db/models.py (alongside Product).
+Do not create this as a separate file in your real project -- it
+needs to share the same Base as Product so create_all() picks it up
+in one call.
+
+This is a NEW table, so unlike the 'stock' column fix earlier, no
+ALTER TABLE is needed -- create_all() creates missing tables
+automatically without touching existing ones. Just run your normal
+init step after adding this class:
+
+    uv run python -m db.init_db
+""" 
+
+
+class ScrapeRun(Base):
+    __tablename__ = "scrape_runs"
+
+    id: Mapped[int] = mapped_column(
+        Integer,
+        primary_key=True,
+        autoincrement=True,
+    )
+
+    site: Mapped[str] = mapped_column(String(50), nullable=False)
+    query: Mapped[str] = mapped_column(String(255), nullable=False)
+
+    # "running" -> "success" -> or "failed"
+    status: Mapped[str] = mapped_column(String(20), nullable=False, default="running")
+
+    product_count: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+
+    error_message: Mapped[str | None] = mapped_column(Text, nullable=True)
+
+    started_at: Mapped[datetime] = mapped_column(
+        DateTime,
+        default=lambda: datetime.now(UTC),
+        nullable=False,
+    )
+
+    finished_at: Mapped[datetime | None] = mapped_column(
+        DateTime,
+        nullable=True,
+    )
